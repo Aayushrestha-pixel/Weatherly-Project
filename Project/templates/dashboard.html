@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div style="padding-top: 100px;">
+    <h2>Dashboard</h2>
+
+    <!-- Weather Section -->
+    {% if weather %}
+    <div class="card mb-4" style="background: #1c1c1e; border: 1px solid #2c2c2e; border-radius: 15px; padding: 30px;">
+        <h3>Weather in {{ weather.city }}</h3>
+        <h1>{{ weather.temp }}°C</h1>
+        <p>{{ weather.description }}</p>
+        <p>Humidity: {{ weather.humidity }}%</p>
+    </div>
+    {% endif %}
+
+    <!-- Add Task Form -->
+    <div class="card mb-4" style="background: #1c1c1e; border: 1px solid #2c2c2e; border-radius: 15px; padding: 30px;">
+        <h4>Add Task</h4>
+        <form method="POST" action="{{ url_for('add_task') }}">
+            <div class="mb-3">
+                <textarea class="form-control" name="task_name" rows="3" placeholder="Enter your task..." required style="background: #0a0a0a; color: white; border: 1px solid #2c2c2e;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+    </div>
+
+    <!-- Tasks List -->
+    <div class="card" style="background: #1c1c1e; border: 1px solid #2c2c2e; border-radius: 15px; padding: 30px;">
+        <h4>Your Tasks ({{ tasks|length }})</h4>
+        {% if tasks %}
+            {% for task in tasks %}
+            <div class="task-item" style="background: #0a0a0a; padding: 20px; margin: 10px 0; border-radius: 10px; border: 1px solid #2c2c2e;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <h5 {% if task.status == 'completed' %}style="text-decoration: line-through; opacity: 0.5;"{% endif %}>
+                            {{ task.task_name }}
+                        </h5>
+                        <small style="color: #ffffff;">{{ task.created_at.strftime('%b %d, %Y') }}</small>
+                        <!-- AI suggestions will be added here -->
+                    </div>
+                    <div>
+                        <a href="{{ url_for('toggle_task', task_id=task.id) }}" class="btn btn-sm btn-success">
+                            {% if task.status == 'completed' %}Undo{% else %}Complete{% endif %}
+                        </a>
+                        <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #ffffff;">No tasks yet. Add your first task above!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
